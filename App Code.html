@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Rehab Tracker Pro</title>
+  
+  <!-- PWA Manifest Link -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f172a">
+  
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --subtext: #475569;
+      --green: #dcfce7;
+      --green-border: #22c55e;
+      --yellow: #fef9c3;
+      --yellow-border: #eab308;
+      --orange: #ffedd5;
+      --orange-border: #f97316;
+      --blue: #e0f2fe;
+      --blue-border: #0284c7;
+      --nav-active: #0f172a;
+      --nav-inactive: #94a3b8;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 16px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    h1 { font-size: 1.5rem; margin-bottom: 4px; }
+    p.subtitle { color: var(--subtext); font-size: 0.9rem; margin-top: 0; margin-bottom: 16px; }
+
+    /* Navigation */
+    .nav-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 8px;
+    }
+    .nav-btn {
+      background: none;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--nav-inactive);
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 6px;
+      flex-grow: 1;
+    }
+    .nav-btn.active {
+      color: var(--nav-active);
+      background: #e2e8f0;
+    }
+
+    /* Views */
+    .view-section { display: none; }
+    .view-section.active { display: block; }
+
+    /* Phase Controls */
+    .phase-toggles {
+      background: white;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .phase-toggles h3 { margin: 0 0 12px 0; font-size: 1rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;}
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .toggle-row:last-child { margin-bottom: 0; }
+    
+    /* Toggle Switch */
+    .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 24px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider.yellow { background-color: var(--yellow-border); }
+    input:checked + .slider.orange { background-color: var(--orange-border); }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    /* Cards */
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 20px 0 10px 0;
+      padding-bottom: 4px;
+      border-bottom: 2px solid #cbd5e1;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-left: 6px solid #ccc;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      transition: opacity 0.3s ease;
+    }
+
+    .card.green { border-color: var(--green-border); background: var(--green); }
+    .card.yellow { border-color: var(--yellow-border); background: var(--yellow); }
+    .card.orange { border-color: var(--orange-border); background: var(--orange); }
+    .card.blue { border-color: var(--blue-border); background: var(--blue); }
+
+    .card-info { flex-grow: 1; padding-right: 12px; }
+    .card-title { font-weight: 600; font-size: 1rem; margin-bottom: 4px;}
+    .card-meta { font-size: 0.85rem; color: var(--subtext); }
+    
+    .card-note {
+      font-size: 0.8rem;
+      color: #991b1b;
+      background: #fee2e2;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-top: 8px;
+      display: inline-block;
+      font-weight: 600;
+      border: 1px solid #f87171;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #e2e8f0;
+      color: #334155;
+      font-size: 0.75rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+      margin-top: 6px;
+    }
+    .badge.goal-met { background: #22c55e; color: white; }
+
+    input[type="checkbox"].ex-check {
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      accent-color: #16a34a;
+    }
+
+    .completed .card-title, .completed .card-meta, .completed .card-note {
+      opacity: 0.5;
+    }
+    .completed .card-title { text-decoration: line-through; }
+
+    /* History Styles */
+    .history-week {
+      background: white;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+    }
+    .history-week h3 { margin: 0 0 12px 0; font-size: 1.1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;}
+    
+    .hist-item { margin-bottom: 12px; }
+    .hist-item-header { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; }
+    .hist-bar-bg { background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden; }
+    .hist-bar-fill { height: 100%; border-radius: 5px; transition: width 0.3s; }
+    
+    .hist-bar-fill.high { background: #22c55e; } /* 100% */
+    .hist-bar-fill.med { background: #eab308; } /* 50-99% */
+    .hist-bar-fill.low { background: #ef4444; } /* <50% */
+
+    .locked { display: none !important; }
+
+  </style>
+</head>
+<body>
+
+  <h1>Rehab Program Tracker</h1>
+  <p class="subtitle" id="date-display">Loading...</p>
+
+  <div class="nav-tabs">
+    <button class="nav-btn active" id="btn-today" onclick="switchTab('today')">Today</button>
+    <button class="nav-btn" id="btn-history" onclick="switchTab('history')">Progress & History</button>
+  </div>
+
+  <!-- TODAY VIEW -->
+  <div id="view-today" class="view-section active">
+    
+    <div class="phase-toggles">
+      <h3>Phase Unlocks</h3>
+      <div class="toggle-row">
+        <span>Painful range improved <br><small style="color:var(--subtext); font-weight:400;">Unlocks Yellow Exercises</small></span>
+        <label class="switch">
+          <input type="checkbox" id="toggle-yellow" onchange="updatePhases()">
+          <span class="slider yellow"></span>
+        </label>
+      </div>
+      <div class="toggle-row">
+        <span>Can apply mild loading <br><small style="color:var(--subtext); font-weight:400;">Unlocks Orange Exercises</small></span>
+        <label class="switch">
+          <input type="checkbox" id="toggle-orange" onchange="updatePhases()">
+          <span class="slider orange"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="section-title">Upper Back & Neck</div>
+    <div id="upper-list"></div>
+
+    <div class="section-title">Lower Limb / Hip</div>
+    <div id="lower-list"></div>
+  </div>
+
+  <!-- HISTORY VIEW -->
+  <div id="view-history" class="view-section">
+    <div id="history-list"></div>
+  </div>
+
+  <script>
+    // --- PWA Service Worker Registration ---
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').then(reg => {
+          console.log('ServiceWorker registered:', reg.scope);
+        }).catch(err => {
+          console.log('ServiceWorker registration failed:', err);
+        });
+      });
+    }
+
+    // --- Data Configuration ---
+    const exercises = [
+      { id: "e1", cat: "upper", name: "Denneroll", freq: "Daily: 3min - 20min", stage: "green", target: 7, note: "Start in Week 2" },
+      { id: "e2", cat: "upper", name: "Shoulder pendulums", freq: "Daily: 2 min", stage: "green", target: 7 },
+      { id: "e3", cat: "upper", name: "Prone Chin tuck", freq: "Daily: 10 reps x 3 sets", stage: "green", target: 7 },
+      { id: "e4", cat: "upper", name: "Half kneeling straight elbows", freq: "3-4/Wk: 10 reps x 3 sets", stage: "green", target: 4 },
+      { id: "e5", cat: "upper", name: "Wall washing", freq: "Daily: 20 rotations each dir", stage: "yellow", target: 7 },
+      { id: "e6", cat: "upper", name: "Foam roller Overhead reach", freq: "Daily: 20 reps", stage: "orange", target: 7, note: "Keep core active. Needs L shoulder mobility restored." },
+      { id: "e7", cat: "upper", name: "Side lying PIR", freq: "3x Daily: 10s hold, 5x3", stage: "orange", target: 7, note: "On right side for now." },
+      { id: "e8", cat: "lower", name: "Side lying Hip rotations", freq: "Daily: 12 reps x 2 sets", stage: "blue", target: 7 },
+      { id: "e9", cat: "lower", name: "Hip Flexor stretch", freq: "4/wk: 2 min hold", stage: "blue", target: 4 },
+      { id: "e10", cat: "lower", name: "Resisted Dorsiflexion", freq: "4/wk: 8-12 reps x 3 sets", stage: "blue", target: 4 },
+      { id: "e11", cat: "lower", name: "Quadruped pelvic tucks", freq: "Daily: 12 reps x 2 sets", stage: "blue", target: 7 },
+      { id: "e12", cat: "lower", name: "Toe elevated Calf raise", freq: "4/wk: 10 reps x 2-3 sets", stage: "blue", target: 4 }
+    ];
+
+    // --- Utilities ---
+    function getTodayStr() {
+      const d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+
+    function getMonday(dateStr) {
+      const d = new Date(dateStr + 'T00:00:00');
+      const day = d.getDay();
+      const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+      const monday = new Date(d.setDate(diff));
+      return monday.getFullYear() + '-' + String(monday.getMonth()+1).padStart(2, '0') + '-' + String(monday.getDate()).padStart(2, '0');
+    }
+
+    function formatDate(dateStr) {
+      const options = { weekday: 'long', month: 'short', day: 'numeric' };
+      return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', options);
+    }
+
+    // --- State Management ---
+    function loadState() { return JSON.parse(localStorage.getItem('rehab_history_pwa') || '{}'); }
+    function saveState(state) { localStorage.setItem('rehab_history_pwa', JSON.stringify(state)); }
+    function loadPhases() { return JSON.parse(localStorage.getItem('rehab_phases') || '{"yellow":false, "orange":false}'); }
+    function savePhases(phases) { localStorage.setItem('rehab_phases', JSON.stringify(phases)); }
+
+    function toggleExercise(id) {
+      const today = getTodayStr();
+      const state = loadState();
+      if (!state[today]) state[today] = {};
+      state[today][id] = !state[today][id];
+      saveState(state);
+      renderToday();
+    }
+
+    function updatePhases() {
+      const phases = {
+        yellow: document.getElementById('toggle-yellow').checked,
+        orange: document.getElementById('toggle-orange').checked
+      };
+      savePhases(phases);
+      renderToday();
+    }
+
+    function getWeeklyCounts(state, mondayStr) {
+      let counts = {};
+      exercises.forEach(ex => counts[ex.id] = 0);
+      for (let i = 0; i < 7; i++) {
+        let d = new Date(mondayStr + 'T00:00:00');
+        d.setDate(d.getDate() + i);
+        let dStr = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        if (state[dStr]) {
+          exercises.forEach(ex => { if (state[dStr][ex.id]) counts[ex.id]++; });
+        }
+      }
+      return counts;
+    }
+
+    // --- UI Rendering ---
+    function renderToday() {
+      const today = getTodayStr();
+      const currentMonday = getMonday(today);
+      const state = loadState();
+      const todayState = state[today] || {};
+      const weeklyCounts = getWeeklyCounts(state, currentMonday);
+      const phases = loadPhases();
+
+      document.getElementById('toggle-yellow').checked = phases.yellow;
+      document.getElementById('toggle-orange').checked = phases.orange;
+      document.getElementById('date-display').innerText = formatDate(today) + " (Week resets on Mon)";
+      
+      const upperEl = document.getElementById('upper-list');
+      const lowerEl = document.getElementById('lower-list');
+      upperEl.innerHTML = ''; lowerEl.innerHTML = '';
+
+      exercises.forEach(ex => {
+        // Phase Unlocking Logic
+        let isLocked = false;
+        if (ex.stage === 'yellow' && !phases.yellow) isLocked = true;
+        if (ex.stage === 'orange' && !phases.orange) isLocked = true;
+
+        const isChecked = !!todayState[ex.id];
+        const currentCount = weeklyCounts[ex.id];
+        const goalMet = currentCount >= ex.target;
+
+        const card = document.createElement('div');
+        card.className = `card ${ex.stage} ${isChecked ? 'completed' : ''} ${isLocked ? 'locked' : ''}`;
+        
+        let noteHTML = ex.note ? `<div class="card-note">⚠️ ${ex.note}</div>` : '';
+
+        card.innerHTML = `
+          <div class="card-info">
+            <div class="card-title">${ex.name}</div>
+            <div class="card-meta">${ex.freq}</div>
+            ${noteHTML}
+            <br>
+            <div class="badge ${goalMet ? 'goal-met' : ''}">${currentCount} / ${ex.target} days done</div>
+          </div>
+          <input type="checkbox" class="ex-check" ${isChecked ? 'checked' : ''} onchange="toggleExercise('${ex.id}')">
+        `;
+
+        if (ex.cat === 'upper') upperEl.appendChild(card);
+        else lowerEl.appendChild(card);
+      });
+    }
+
+    function renderHistory() {
+      const state = loadState();
+      const historyList = document.getElementById('history-list');
+      historyList.innerHTML = '';
+
+      const uniqueMondays = [...new Set(Object.keys(state).map(d => getMonday(d)))].sort().reverse();
+
+      if (uniqueMondays.length === 0) {
+        historyList.innerHTML = '<p style="text-align:center; color:#64748b; margin-top: 40px;">No history recorded yet. Complete exercises to build your streak!</p>';
+        return;
+      }
+
+      uniqueMondays.forEach(monday => {
+        const counts = getWeeklyCounts(state, monday);
+        
+        const weekCard = document.createElement('div');
+        weekCard.className = 'history-week';
+        
+        let header = `<h3>Week of ${formatDate(monday)}</h3>`;
+        let itemsHTML = '';
+
+        exercises.forEach(ex => {
+          const count = counts[ex.id];
+          if (count === 0) return; // Hide exercises not done at all that week
+          
+          let pct = Math.min(100, Math.round((count / ex.target) * 100));
+          let barClass = pct >= 100 ? 'high' : (pct >= 50 ? 'med' : 'low');
+
+          itemsHTML += `
+            <div class="hist-item">
+              <div class="hist-item-header">
+                <span>${ex.name}</span>
+                <span>${pct}% (${count}/${ex.target})</span>
+              </div>
+              <div class="hist-bar-bg">
+                <div class="hist-bar-fill ${barClass}" style="width: ${pct}%"></div>
+              </div>
+            </div>
+          `;
+        });
+
+        weekCard.innerHTML = header + (itemsHTML || '<p style="font-size:0.9rem; color:#64748b;">No exercises logged.</p>');
+        historyList.appendChild(weekCard);
+      });
+    }
+
+    function switchTab(tab) {
+      document.getElementById('view-today').classList.remove('active');
+      document.getElementById('view-history').classList.remove('active');
+      document.getElementById('btn-today').classList.remove('active');
+      document.getElementById('btn-history').classList.remove('active');
+
+      document.getElementById(`view-${tab}`).classList.add('active');
+      document.getElementById(`btn-${tab}`).classList.add('active');
+
+      if (tab === 'today') renderToday();
+      if (tab === 'history') renderHistory();
+    }
+
+    // Init
+    renderToday();
+
+  </script>
+</body>
+</html>
