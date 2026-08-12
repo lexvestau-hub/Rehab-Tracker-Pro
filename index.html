@@ -136,10 +136,34 @@
       background: #fee2e2;
       padding: 4px 8px;
       border-radius: 4px;
-      margin-top: 8px;
+      margin-top: 6px;
       display: inline-block;
       font-weight: 600;
       border: 1px solid #f87171;
+    }
+
+    .video-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #0284c7;
+      text-decoration: none;
+      background: #ffffff;
+      border: 1px solid #bae6fd;
+      padding: 4px 10px;
+      border-radius: 6px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+    .video-btn:hover { background: #f0f9ff; }
+    .video-btn.disabled {
+      color: #94a3b8;
+      background: #f1f5f9;
+      border-color: #e2e8f0;
+      cursor: not-allowed;
+      box-shadow: none;
     }
 
     .badge {
@@ -182,9 +206,9 @@
     .hist-bar-bg { background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden; }
     .hist-bar-fill { height: 100%; border-radius: 5px; transition: width 0.3s; }
     
-    .hist-bar-fill.high { background: #22c55e; } /* 100% */
-    .hist-bar-fill.med { background: #eab308; } /* 50-99% */
-    .hist-bar-fill.low { background: #ef4444; } /* <50% */
+    .hist-bar-fill.high { background: #22c55e; }
+    .hist-bar-fill.med { background: #eab308; }
+    .hist-bar-fill.low { background: #ef4444; }
 
     .locked { display: none !important; }
 
@@ -247,18 +271,18 @@
 
     // --- Data Configuration ---
     const exercises = [
-      { id: "e1", cat: "upper", name: "Denneroll", freq: "Daily: 3min - 20min", stage: "green", target: 7, note: "Start in Week 2" },
-      { id: "e2", cat: "upper", name: "Shoulder pendulums", freq: "Daily: 2 min", stage: "green", target: 7 },
-      { id: "e3", cat: "upper", name: "Prone Chin tuck", freq: "Daily: 10 reps x 3 sets", stage: "green", target: 7 },
-      { id: "e4", cat: "upper", name: "Half kneeling straight elbows", freq: "3-4/Wk: 10 reps x 3 sets", stage: "green", target: 4 },
-      { id: "e5", cat: "upper", name: "Wall washing", freq: "Daily: 20 rotations each dir", stage: "yellow", target: 7 },
-      { id: "e6", cat: "upper", name: "Foam roller Overhead reach", freq: "Daily: 20 reps", stage: "orange", target: 7, note: "Keep core active. Needs L shoulder mobility restored." },
-      { id: "e7", cat: "upper", name: "Side lying PIR", freq: "3x Daily: 10s hold, 5x3", stage: "orange", target: 7, note: "On right side for now." },
-      { id: "e8", cat: "lower", name: "Side lying Hip rotations", freq: "Daily: 12 reps x 2 sets", stage: "blue", target: 7 },
-      { id: "e9", cat: "lower", name: "Hip Flexor stretch", freq: "4/wk: 2 min hold", stage: "blue", target: 4 },
-      { id: "e10", cat: "lower", name: "Resisted Dorsiflexion", freq: "4/wk: 8-12 reps x 3 sets", stage: "blue", target: 4 },
-      { id: "e11", cat: "lower", name: "Quadruped pelvic tucks", freq: "Daily: 12 reps x 2 sets", stage: "blue", target: 7 },
-      { id: "e12", cat: "lower", name: "Toe elevated Calf raise", freq: "4/wk: 10 reps x 2-3 sets", stage: "blue", target: 4 }
+      { id: "e1", cat: "upper", name: "Denneroll", freq: "Daily: 3min - 20min", stage: "green", target: 7, note: "Start in Week 2", video: "#" },
+      { id: "e2", cat: "upper", name: "Shoulder pendulums", freq: "Daily: 2 min", stage: "green", target: 7, video: "#" },
+      { id: "e3", cat: "upper", name: "Prone Chin tuck", freq: "Daily: 10 reps x 3 sets", stage: "green", target: 7, video: "#" },
+      { id: "e4", cat: "upper", name: "Half kneeling straight elbows", freq: "3-4/Wk: 10 reps x 3 sets", stage: "green", target: 4, video: "https://youtube.com/shorts/JOUV5PZ8MaA" },
+      { id: "e5", cat: "upper", name: "Wall washing", freq: "Daily: 20 rotations each dir", stage: "yellow", target: 7, note: "When not painful to reach 90 deg in front", video: "#" },
+      { id: "e6", cat: "upper", name: "Foam roller Overhead reach", freq: "Daily: 20 reps", stage: "orange", target: 7, note: "Keep core active. Needs L shoulder mobility restored.", video: null, pendingNote: "Video in creation" },
+      { id: "e7", cat: "upper", name: "Side lying PIR", freq: "3x Daily: 10s hold, 5x3", stage: "orange", target: 7, note: "On right side for now.", video: "#" },
+      { id: "e8", cat: "lower", name: "Side lying Hip rotations", freq: "Daily: 12 reps x 2 sets", stage: "blue", target: 7, video: "#" },
+      { id: "e9", cat: "lower", name: "Hip Flexor stretch", freq: "4/wk: 2 min hold", stage: "blue", target: 4, video: "#" },
+      { id: "e10", cat: "lower", name: "Resisted Dorsiflexion", freq: "4/wk: 8-12 reps x 3 sets", stage: "blue", target: 4, video: "#" },
+      { id: "e11", cat: "lower", name: "Quadruped pelvic tucks", freq: "Daily: 12 reps x 2 sets", stage: "blue", target: 7, video: "#" },
+      { id: "e12", cat: "lower", name: "Toe elevated Calf raise", freq: "4/wk: 10 reps x 2-3 sets", stage: "blue", target: 4, video: "#" }
     ];
 
     // --- Utilities ---
@@ -336,7 +360,6 @@
       upperEl.innerHTML = ''; lowerEl.innerHTML = '';
 
       exercises.forEach(ex => {
-        // Phase Unlocking Logic
         let isLocked = false;
         if (ex.stage === 'yellow' && !phases.yellow) isLocked = true;
         if (ex.stage === 'orange' && !phases.orange) isLocked = true;
@@ -349,13 +372,20 @@
         card.className = `card ${ex.stage} ${isChecked ? 'completed' : ''} ${isLocked ? 'locked' : ''}`;
         
         let noteHTML = ex.note ? `<div class="card-note">⚠️ ${ex.note}</div>` : '';
+        
+        let videoHTML = '';
+        if (ex.video) {
+          videoHTML = `<a href="${ex.video}" target="_blank" rel="noopener noreferrer" class="video-btn">▶ Watch Video</a>`;
+        } else {
+          videoHTML = `<span class="video-btn disabled">⏳ ${ex.pendingNote || 'Video in creation'}</span>`;
+        }
 
         card.innerHTML = `
           <div class="card-info">
             <div class="card-title">${ex.name}</div>
             <div class="card-meta">${ex.freq}</div>
             ${noteHTML}
-            <br>
+            <div style="margin-top: 4px;">${videoHTML}</div>
             <div class="badge ${goalMet ? 'goal-met' : ''}">${currentCount} / ${ex.target} days done</div>
           </div>
           <input type="checkbox" class="ex-check" ${isChecked ? 'checked' : ''} onchange="toggleExercise('${ex.id}')">
@@ -389,7 +419,7 @@
 
         exercises.forEach(ex => {
           const count = counts[ex.id];
-          if (count === 0) return; // Hide exercises not done at all that week
+          if (count === 0) return;
           
           let pct = Math.min(100, Math.round((count / ex.target) * 100));
           let barClass = pct >= 100 ? 'high' : (pct >= 50 ? 'med' : 'low');
