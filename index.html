@@ -147,6 +147,7 @@
       align-items: center;
       gap: 4px;
       margin-top: 6px;
+      margin-right: 4px;
       font-size: 0.8rem;
       font-weight: 600;
       color: #0284c7;
@@ -271,18 +272,21 @@
 
     // --- Data Configuration ---
     const exercises = [
-      { id: "e1", cat: "upper", name: "Denneroll", freq: "Daily: 3min - 20min", stage: "green", target: 7, note: "Start in Week 2", video: "https://www.youtube.com/watch?v=UtFdhy04uQc" },
-      { id: "e2", cat: "upper", name: "Shoulder pendulums", freq: "Daily: 2 min", stage: "green", target: 7, video: "https://www.youtube.com/shorts/0oQ_Pg5Cppw" },
-      { id: "e3", cat: "upper", name: "Prone Chin tuck", freq: "Daily: 10 reps x 3 sets", stage: "green", target: 7, video: "https://www.tiktok.com/@kai.chiropractic/video/7536468644595780871" },
+      // Upper Back & Neck
+      { id: "e1", cat: "upper", name: "Denneroll", freq: "Daily: 3min - 20min", stage: "green", target: 7, note: "Start in Week 2", video: null },
+      { id: "e3", cat: "upper", name: "Prone Chin tuck", freq: "Daily: 10 reps x 3 sets", stage: "green", target: 7, video: null },
       { id: "e4", cat: "upper", name: "Half kneeling straight elbows", freq: "3-4/Wk: 10 reps x 3 sets", stage: "green", target: 4, video: "https://youtube.com/shorts/JOUV5PZ8MaA" },
-      { id: "e5", cat: "upper", name: "Wall washing", freq: "Daily: 20 rotations each dir", stage: "yellow", target: 7, note: "When not painful to reach 90 deg in front", video: "https://www.youtube.com/watch?si=s4-W_4Nocd3e82rX&t=47&v=d19ro6iruU0&feature=youtu.be" },
+      { id: "e5", cat: "upper", name: "Wall washing", freq: "Daily: 20 rotations each dir", stage: "yellow", target: 7, note: "When not painful to reach 90 deg in front", video: null },
       { id: "e6", cat: "upper", name: "Foam roller Overhead reach", freq: "Daily: 20 reps", stage: "orange", target: 7, note: "Keep core active. Needs L shoulder mobility restored.", video: null, pendingNote: "Video in creation" },
-      { id: "e7", cat: "upper", name: "Side lying PIR", freq: "3x Daily: 10s hold, 5x3", stage: "orange", target: 7, note: "On right side for now.", video: "https://www.youtube.com/shorts/kDXOvyRiZig?feature=share" },
-      { id: "e8", cat: "lower", name: "Side lying Hip rotations", freq: "Daily: 12 reps x 2 sets", stage: "blue", target: 7, video: "https://www.youtube.com/shorts/LKt1WTeVt4Y?si=j13qDMNLZvkFEhmy" },
-      { id: "e9", cat: "lower", name: "Hip Flexor stretch", freq: "4/wk: 2 min hold", stage: "blue", target: 4, video: "https://www.youtube.com/watch?v=Phw6_v9YRFw" },
-      { id: "e10", cat: "lower", name: "Resisted Dorsiflexion", freq: "4/wk: 8-12 reps x 3 sets", stage: "blue", target: 4, video: "https://www.youtube.com/shorts/BzTwD3CqvZg?feature=share" },
-      { id: "e11", cat: "lower", name: "Quadruped pelvic tucks", freq: "Daily: 12 reps x 2 sets", stage: "blue", target: 7, video: "https://www.youtube.com/shorts/QGb3kb_8suE?si=OwxHDUU5ZEdoqJ7T" },
-      { id: "e12", cat: "lower", name: "Toe elevated Calf raise", freq: "4/wk: 10 reps x 2-3 sets", stage: "blue", target: 4, video: "https://www.youtube.com/shorts/uejJNy6O81I" }
+      { id: "e7", cat: "upper", name: "Side lying PIR", freq: "3x Daily: 10s hold, 5x3", stage: "orange", target: 7, note: "On right side for now.", video: null },
+      
+      // Lower Limb / Hip
+      { id: "e8", cat: "lower", name: "Side lying Hip rotations", freq: "Daily: 12 reps x 2 sets", stage: "blue", target: 7, video: [null, "https://www.youtube.com/shorts/jQ9tNlyMm5o?si=f4oKkltrfvhtDgb_"] },
+      { id: "e9", cat: "lower", name: "Hip Flexor stretch", freq: "4/wk: 2 min hold", stage: "blue", target: 4, video: null },
+      { id: "e10", cat: "lower", name: "Resisted Dorsiflexion", freq: "4/wk: 8-12 reps x 3 sets", stage: "blue", target: 4, video: null },
+      { id: "e13", cat: "lower", name: "Jefferson Curl", freq: "4/wk: 10 reps x 1 set", stage: "blue", target: 4, video: "https://www.instagram.com/reel/DYFQlyOuAGq/" },
+      { id: "e11", cat: "lower", name: "Quadruped pelvic tucks", freq: "Daily: 12 reps x 2 sets", stage: "blue", target: 7, video: null },
+      { id: "e12", cat: "lower", name: "Toe elevated Calf raise", freq: "4/wk: 10 reps x 2-3 sets", stage: "blue", target: 4, video: null }
     ];
 
     // --- Utilities ---
@@ -374,8 +378,18 @@
         let noteHTML = ex.note ? `<div class="card-note">⚠️ ${ex.note}</div>` : '';
         
         let videoHTML = '';
-        if (ex.video && ex.video.startsWith('http')) {
-          videoHTML = `<a href="${ex.video}" target="_blank" rel="noopener noreferrer" class="video-btn">▶ Watch Video</a>`;
+        let videoList = Array.isArray(ex.video) ? ex.video : (ex.video !== undefined ? [ex.video] : []);
+
+        if (videoList.length > 0) {
+          videoHTML = videoList.map((vUrl, idx) => {
+            let label = videoList.length > 1 ? `▶ Video ${idx + 1}` : `▶ Watch Video`;
+            if (vUrl && vUrl.startsWith('http')) {
+              return `<a href="${vUrl}" target="_blank" rel="noopener noreferrer" class="video-btn">${label}</a>`;
+            } else {
+              let pendingText = videoList.length > 1 ? `⏳ Video ${idx + 1} pending` : `⏳ ${ex.pendingNote || 'Video pending'}`;
+              return `<span class="video-btn disabled">${pendingText}</span>`;
+            }
+          }).join(' ');
         } else {
           videoHTML = `<span class="video-btn disabled">⏳ ${ex.pendingNote || 'Video pending'}</span>`;
         }
