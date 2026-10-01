@@ -15,14 +15,8 @@
       --card-bg: #ffffff;
       --text: #0f172a;
       --subtext: #475569;
-      --green: #dcfce7;
-      --green-border: #22c55e;
-      --yellow: #fef9c3;
-      --yellow-border: #eab308;
-      --orange: #ffedd5;
-      --orange-border: #f97316;
-      --blue: #e0f2fe;
-      --blue-border: #0284c7;
+      --card-border: #cbd5e1;
+      --accent-border: #0284c7;
       --nav-active: #0f172a;
       --nav-inactive: #94a3b8;
     }
@@ -42,11 +36,11 @@
     h1 { font-size: 1.5rem; margin-bottom: 4px; }
     p.subtitle { color: var(--subtext); font-size: 0.9rem; margin-top: 0; margin-bottom: 16px; }
 
-    /* Navigation */
+    /* Navigation Tabs */
     .nav-tabs {
       display: flex;
       gap: 10px;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       border-bottom: 2px solid #e2e8f0;
       padding-bottom: 8px;
     }
@@ -70,34 +64,42 @@
     .view-section { display: none; }
     .view-section.active { display: block; }
 
-    /* Phase Controls */
-    .phase-toggles {
-      background: white;
-      padding: 16px;
-      border-radius: 8px;
-      border: 1px solid #e2e8f0;
-      margin-bottom: 20px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
-    .phase-toggles h3 { margin: 0 0 12px 0; font-size: 1rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;}
-    .toggle-row {
+    /* Date Navigator */
+    .date-navigator {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 12px;
-      font-size: 0.9rem;
-      font-weight: 600;
+      background: #ffffff;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+      margin-bottom: 16px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
     }
-    .toggle-row:last-child { margin-bottom: 0; }
-    
-    /* Toggle Switch */
-    .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 24px; }
-    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-    input:checked + .slider.yellow { background-color: var(--yellow-border); }
-    input:checked + .slider.orange { background-color: var(--orange-border); }
-    input:checked + .slider:before { transform: translateX(20px); }
+    .date-nav-btn {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      color: #0f172a;
+      font-weight: 600;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .date-nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+    .date-input {
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-family: inherit;
+      font-weight: 600;
+      color: #0f172a;
+      font-size: 0.85rem;
+      background: #f8fafc;
+    }
 
     /* Cards */
     .section-title {
@@ -110,21 +112,19 @@
 
     .card {
       background: var(--card-bg);
-      border-left: 6px solid #ccc;
+      border-left: 5px solid var(--accent-border);
+      border-top: 1px solid var(--card-border);
+      border-right: 1px solid var(--card-border);
+      border-bottom: 1px solid var(--card-border);
       padding: 12px 16px;
       border-radius: 8px;
       margin-bottom: 10px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
       transition: opacity 0.3s ease;
     }
-
-    .card.green { border-color: var(--green-border); background: var(--green); }
-    .card.yellow { border-color: var(--yellow-border); background: var(--yellow); }
-    .card.orange { border-color: var(--orange-border); background: var(--orange); }
-    .card.blue { border-color: var(--blue-border); background: var(--blue); }
 
     .card-info { flex-grow: 1; padding-right: 12px; }
     .card-title { font-weight: 600; font-size: 1rem; margin-bottom: 4px;}
@@ -211,8 +211,6 @@
     .hist-bar-fill.med { background: #eab308; }
     .hist-bar-fill.low { background: #ef4444; }
 
-    .locked { display: none !important; }
-
   </style>
 </head>
 <body>
@@ -221,29 +219,18 @@
   <p class="subtitle" id="date-display">Loading...</p>
 
   <div class="nav-tabs">
-    <button class="nav-btn active" id="btn-today" onclick="switchTab('today')">Today</button>
+    <button class="nav-btn active" id="btn-today" onclick="switchTab('today')">Daily Checklist</button>
     <button class="nav-btn" id="btn-history" onclick="switchTab('history')">Progress & History</button>
   </div>
 
-  <!-- TODAY VIEW -->
+  <!-- TODAY / RETROSPECTIVE ROUTINE VIEW -->
   <div id="view-today" class="view-section active">
     
-    <div class="phase-toggles">
-      <h3>Phase Unlocks</h3>
-      <div class="toggle-row">
-        <span>Painful range improved <br><small style="color:var(--subtext); font-weight:400;">Unlocks Yellow Exercises</small></span>
-        <label class="switch">
-          <input type="checkbox" id="toggle-yellow" onchange="updatePhases()">
-          <span class="slider yellow"></span>
-        </label>
-      </div>
-      <div class="toggle-row">
-        <span>Can apply mild loading <br><small style="color:var(--subtext); font-weight:400;">Unlocks Orange Exercises</small></span>
-        <label class="switch">
-          <input type="checkbox" id="toggle-orange" onchange="updatePhases()">
-          <span class="slider orange"></span>
-        </label>
-      </div>
+    <!-- Date Navigator -->
+    <div class="date-navigator">
+      <button class="date-nav-btn" onclick="navigateDate(-1)">&larr; Prev Day</button>
+      <input type="date" id="date-picker" class="date-input" onchange="onDatePickerChange(this.value)">
+      <button class="date-nav-btn" id="next-day-btn" onclick="navigateDate(1)">Next Day &rarr;</button>
     </div>
 
     <div class="section-title">Upper Back & Neck</div>
@@ -273,23 +260,24 @@
     // --- Data Configuration ---
     const exercises = [
       // Upper Back & Neck
-      { id: "e1", cat: "upper", name: "Denneroll", freq: "Daily: 3min - 20min", stage: "green", target: 7, note: "Start in Week 2", video: "https://www.youtube.com/watch?v=UtFdhy04uQc" },
-      { id: "e3", cat: "upper", name: "Prone Chin tuck", freq: "Daily: 10 reps x 3 sets", stage: "green", target: 7, video: "https://www.tiktok.com/@kai.chiropractic/video/7536468644595780871" },
-      { id: "e4", cat: "upper", name: "Half kneeling straight elbows", freq: "3-4/Wk: 10 reps x 3 sets", stage: "green", target: 4, video: "https://www.youtube.com/shorts/JOUV5PZ8MaA" },
-      { id: "e5", cat: "upper", name: "Wall washing", freq: "Daily: 20 rotations each dir", stage: "yellow", target: 7, note: "When not painful to reach 90 deg in front", video: "https://www.youtube.com/watch?v=d19ro6iruU0&t=47s" },
-      { id: "e6", cat: "upper", name: "Foam roller Overhead reach", freq: "Daily: 20 reps", stage: "orange", target: 7, note: "Keep core active. Needs L shoulder mobility restored.", video: null, pendingNote: "Video in creation" },
-      { id: "e7", cat: "upper", name: "Side lying PIR", freq: "3x Daily: 10s hold, 5x3", stage: "orange", target: 7, note: "On right side for now.", video: "https://www.youtube.com/shorts/kDXOvyRiZig" },
+      { id: "e1", cat: "upper", name: "Denneroll", freq: "Daily: 3min - 20min", target: 7, note: "Start in Week 2", video: "https://www.youtube.com/watch?v=UtFdhy04uQc" },
+      { id: "e3", cat: "upper", name: "Prone Chin tuck", freq: "Daily: 10 reps x 3 sets", target: 7, video: "https://www.tiktok.com/@kai.chiropractic/video/7536468644595780871" },
+      { id: "e4", cat: "upper", name: "Laying serratus punch", freq: "3-4/Wk: 10 reps x 3 sets", target: 4, video: null },
+      { id: "e6", cat: "upper", name: "Foam roller Overhead reach", freq: "Daily: 20 reps", target: 7, note: "Keep core active. Needs L shoulder mobility restored.", video: null, pendingNote: "Video in creation" },
+      { id: "e14", cat: "upper", name: "External rotator cuff", freq: "3/wk: 10 reps x 3 sets", target: 3, video: null },
       
       // Lower Limb / Hip
-      { id: "e8", cat: "lower", name: "Side lying Hip rotations", freq: "Daily: 12 reps x 2 sets", stage: "blue", target: 7, video: ["https://www.youtube.com/shorts/LKt1WTeVt4Y", "https://www.youtube.com/shorts/jQ9tNlyMm5o"] },
-      { id: "e9", cat: "lower", name: "Hip Flexor stretch", freq: "4/wk: 2 min hold", stage: "blue", target: 4, video: "https://www.youtube.com/watch?v=Phw6_v9YRFw" },
-      { id: "e10", cat: "lower", name: "Resisted Dorsiflexion", freq: "4/wk: 8-12 reps x 3 sets", stage: "blue", target: 4, video: "https://www.youtube.com/shorts/BzTwD3CqvZg" },
-      { id: "e13", cat: "lower", name: "Jefferson Curl", freq: "4/wk: 10 reps x 1 set", stage: "blue", target: 4, video: "https://www.instagram.com/reel/DYFQlyOuAGq/" },
-      { id: "e11", cat: "lower", name: "Quadruped pelvic tucks", freq: "Daily: 12 reps x 2 sets", stage: "blue", target: 7, video: "https://www.youtube.com/shorts/QGb3kb_8suE" },
-      { id: "e12", cat: "lower", name: "Toe elevated Calf raise", freq: "4/wk: 10 reps x 2-3 sets", stage: "blue", target: 4, video: "https://www.youtube.com/shorts/uejJNy6O81I" }
+      { id: "e8", cat: "lower", name: "Side lying Hip rotations", freq: "Daily: 12 reps x 2 sets", target: 7, video: ["https://www.youtube.com/shorts/LKt1WTeVt4Y", "https://www.youtube.com/shorts/jQ9tNlyMm5o"] },
+      { id: "e10", cat: "lower", name: "Resisted Dorsiflexion", freq: "4/wk: 8-12 reps x 3 sets", target: 4, video: "https://www.youtube.com/shorts/BzTwD3CqvZg" },
+      { id: "e13", cat: "lower", name: "Jefferson Curl", freq: "4/wk: 10 reps x 1 set", target: 4, video: "https://www.instagram.com/reel/DYFQlyOuAGq/" },
+      { id: "e15", cat: "lower", name: "Standing banded march", freq: "3/wk: 8 reps x 2 sets", target: 3, video: null },
+      { id: "e12", cat: "lower", name: "Toe elevated Calf raise", freq: "4/wk: 10 reps x 2-3 sets", target: 4, video: "https://www.youtube.com/shorts/uejJNy6O81I" }
     ];
 
-    // --- Utilities ---
+    // --- Date State ---
+    let selectedDate = getTodayStr();
+
+    // --- Date Utilities ---
     function getTodayStr() {
       const d = new Date();
       return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
@@ -311,25 +299,35 @@
     // --- State Management ---
     function loadState() { return JSON.parse(localStorage.getItem('rehab_history_pwa') || '{}'); }
     function saveState(state) { localStorage.setItem('rehab_history_pwa', JSON.stringify(state)); }
-    function loadPhases() { return JSON.parse(localStorage.getItem('rehab_phases') || '{"yellow":false, "orange":false}'); }
-    function savePhases(phases) { localStorage.setItem('rehab_phases', JSON.stringify(phases)); }
 
     function toggleExercise(id) {
-      const today = getTodayStr();
       const state = loadState();
-      if (!state[today]) state[today] = {};
-      state[today][id] = !state[today][id];
+      if (!state[selectedDate]) state[selectedDate] = {};
+      state[selectedDate][id] = !state[selectedDate][id];
       saveState(state);
-      renderToday();
+      renderRoutine();
     }
 
-    function updatePhases() {
-      const phases = {
-        yellow: document.getElementById('toggle-yellow').checked,
-        orange: document.getElementById('toggle-orange').checked
-      };
-      savePhases(phases);
-      renderToday();
+    // --- Date Navigation Logic ---
+    function navigateDate(offsetDays) {
+      let d = new Date(selectedDate + 'T00:00:00');
+      d.setDate(d.getDate() + offsetDays);
+      let newDateStr = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      
+      if (newDateStr > getTodayStr()) return;
+      selectedDate = newDateStr;
+      renderRoutine();
+    }
+
+    function onDatePickerChange(val) {
+      if (!val) return;
+      if (val > getTodayStr()) {
+        alert("Cannot log exercises for future dates.");
+        selectedDate = getTodayStr();
+      } else {
+        selectedDate = val;
+      }
+      renderRoutine();
     }
 
     function getWeeklyCounts(state, mondayStr) {
@@ -347,33 +345,35 @@
     }
 
     // --- UI Rendering ---
-    function renderToday() {
+    function renderRoutine() {
       const today = getTodayStr();
-      const currentMonday = getMonday(today);
+      const currentMonday = getMonday(selectedDate);
       const state = loadState();
-      const todayState = state[today] || {};
+      const selectedDayState = state[selectedDate] || {};
       const weeklyCounts = getWeeklyCounts(state, currentMonday);
-      const phases = loadPhases();
 
-      document.getElementById('toggle-yellow').checked = phases.yellow;
-      document.getElementById('toggle-orange').checked = phases.orange;
-      document.getElementById('date-display').innerText = formatDate(today) + " (Week resets on Mon)";
+      // Date Picker Controls
+      const picker = document.getElementById('date-picker');
+      picker.value = selectedDate;
+      picker.max = today;
+
+      const nextBtn = document.getElementById('next-day-btn');
+      nextBtn.disabled = (selectedDate >= today);
+
+      let isToday = (selectedDate === today);
+      document.getElementById('date-display').innerText = (isToday ? "Today, " : "Logging for ") + formatDate(selectedDate);
       
       const upperEl = document.getElementById('upper-list');
       const lowerEl = document.getElementById('lower-list');
       upperEl.innerHTML = ''; lowerEl.innerHTML = '';
 
       exercises.forEach(ex => {
-        let isLocked = false;
-        if (ex.stage === 'yellow' && !phases.yellow) isLocked = true;
-        if (ex.stage === 'orange' && !phases.orange) isLocked = true;
-
-        const isChecked = !!todayState[ex.id];
+        const isChecked = !!selectedDayState[ex.id];
         const currentCount = weeklyCounts[ex.id];
         const goalMet = currentCount >= ex.target;
 
         const card = document.createElement('div');
-        card.className = `card ${ex.stage} ${isChecked ? 'completed' : ''} ${isLocked ? 'locked' : ''}`;
+        card.className = `card ${isChecked ? 'completed' : ''}`;
         
         let noteHTML = ex.note ? `<div class="card-note">⚠️ ${ex.note}</div>` : '';
         
@@ -400,7 +400,7 @@
             <div class="card-meta">${ex.freq}</div>
             ${noteHTML}
             <div style="margin-top: 4px;">${videoHTML}</div>
-            <div class="badge ${goalMet ? 'goal-met' : ''}">${currentCount} / ${ex.target} days done</div>
+            <div class="badge ${goalMet ? 'goal-met' : ''}">${currentCount} / ${ex.target} days done this week</div>
           </div>
           <input type="checkbox" class="ex-check" ${isChecked ? 'checked' : ''} onchange="toggleExercise('${ex.id}')">
         `;
@@ -465,12 +465,12 @@
       document.getElementById(`view-${tab}`).classList.add('active');
       document.getElementById(`btn-${tab}`).classList.add('active');
 
-      if (tab === 'today') renderToday();
+      if (tab === 'today') renderRoutine();
       if (tab === 'history') renderHistory();
     }
 
     // Init
-    renderToday();
+    renderRoutine();
 
   </script>
 </body>
