@@ -223,7 +223,7 @@
     <button class="nav-btn" id="btn-history" onclick="switchTab('history')">Progress & History</button>
   </div>
 
-  <!-- TODAY / RETROSPECTIVE ROUTINE VIEW -->
+  <!-- DAILY & WEEKLY ROUTINE VIEW -->
   <div id="view-today" class="view-section active">
     
     <!-- Date Navigator -->
@@ -233,11 +233,11 @@
       <button class="date-nav-btn" id="next-day-btn" onclick="navigateDate(1)">Next Day &rarr;</button>
     </div>
 
-    <div class="section-title">Upper Back & Neck</div>
-    <div id="upper-list"></div>
+    <div class="section-title">Daily Exercises</div>
+    <div id="daily-list"></div>
 
-    <div class="section-title">Lower Limb / Hip</div>
-    <div id="lower-list"></div>
+    <div class="section-title">3–4 Times a Week</div>
+    <div id="weekly-list"></div>
   </div>
 
   <!-- HISTORY VIEW -->
@@ -259,19 +259,19 @@
 
     // --- Data Configuration ---
     const exercises = [
-      // Upper Back & Neck
-      { id: "e1", cat: "upper", name: "Denneroll", freq: "Daily: 3min - 20min", target: 7, note: "Start in Week 2", video: "https://www.youtube.com/watch?v=UtFdhy04uQc" },
-      { id: "e3", cat: "upper", name: "Prone Chin tuck", freq: "Daily: 10 reps x 3 sets", target: 7, video: "https://www.tiktok.com/@kai.chiropractic/video/7536468644595780871" },
-      { id: "e4", cat: "upper", name: "Laying serratus punch", freq: "3-4/Wk: 10 reps x 3 sets", target: 4, video: null },
-      { id: "e6", cat: "upper", name: "Foam roller Overhead reach", freq: "Daily: 20 reps", target: 7, note: "Keep core active. Needs L shoulder mobility restored.", video: null, pendingNote: "Video in creation" },
-      { id: "e14", cat: "upper", name: "External rotator cuff", freq: "3/wk: 10 reps x 3 sets", target: 3, video: null },
-      
-      // Lower Limb / Hip
-      { id: "e8", cat: "lower", name: "Side lying Hip rotations", freq: "Daily: 12 reps x 2 sets", target: 7, video: ["https://www.youtube.com/shorts/LKt1WTeVt4Y", "https://www.youtube.com/shorts/jQ9tNlyMm5o"] },
-      { id: "e10", cat: "lower", name: "Resisted Dorsiflexion", freq: "4/wk: 8-12 reps x 3 sets", target: 4, video: "https://www.youtube.com/shorts/BzTwD3CqvZg" },
-      { id: "e13", cat: "lower", name: "Jefferson Curl", freq: "4/wk: 10 reps x 1 set", target: 4, video: "https://www.instagram.com/reel/DYFQlyOuAGq/" },
-      { id: "e15", cat: "lower", name: "Standing banded march", freq: "3/wk: 8 reps x 2 sets", target: 3, video: null },
-      { id: "e12", cat: "lower", name: "Toe elevated Calf raise", freq: "4/wk: 10 reps x 2-3 sets", target: 4, video: "https://www.youtube.com/shorts/uejJNy6O81I" }
+      // Daily Exercises
+      { id: "e1", cat: "daily", name: "Denneroll", freq: "Daily: 3min - 20min", target: 7, video: "https://www.youtube.com/watch?v=UtFdhy04uQc" },
+      { id: "e3", cat: "daily", name: "Prone Chin tuck", freq: "Daily: 10 reps x 3 sets", target: 7, video: "https://www.tiktok.com/@kai.chiropractic/video/7536468644595780871" },
+      { id: "e6", cat: "daily", name: "Foam roller Overhead reach", freq: "Daily: 20 reps", target: 7, video: null, pendingNote: "Video in creation" },
+      { id: "e8", cat: "daily", name: "Side lying Hip rotations", freq: "Daily: 12 reps x 2 sets", target: 7, video: ["https://www.youtube.com/shorts/LKt1WTeVt4Y", "https://www.youtube.com/shorts/jQ9tNlyMm5o"] },
+
+      // 3-4 Times a Week Exercises
+      { id: "e4", cat: "weekly", name: "Laying serratus punch", freq: "3-4/Wk: 10 reps x 3 sets", target: 4, video: null },
+      { id: "e14", cat: "weekly", name: "External rotator cuff", freq: "3/wk: 10 reps x 3 sets", target: 3, video: null },
+      { id: "e10", cat: "weekly", name: "Resisted Dorsiflexion", freq: "4/wk: 8-12 reps x 3 sets", target: 4, video: "https://www.youtube.com/shorts/BzTwD3CqvZg" },
+      { id: "e13", cat: "weekly", name: "Jefferson Curl", freq: "4/wk: 10 reps x 1 set", target: 4, video: "https://www.instagram.com/reel/DYFQlyOuAGq/" },
+      { id: "e15", cat: "weekly", name: "Standing banded march", freq: "3/wk: 8 reps x 2 sets", target: 3, video: null },
+      { id: "e12", cat: "weekly", name: "Toe elevated Calf raise", freq: "4/wk: 10 reps x 2-3 sets", target: 4, video: "https://www.youtube.com/shorts/uejJNy6O81I" }
     ];
 
     // --- Date State ---
@@ -363,9 +363,9 @@
       let isToday = (selectedDate === today);
       document.getElementById('date-display').innerText = (isToday ? "Today, " : "Logging for ") + formatDate(selectedDate);
       
-      const upperEl = document.getElementById('upper-list');
-      const lowerEl = document.getElementById('lower-list');
-      upperEl.innerHTML = ''; lowerEl.innerHTML = '';
+      const dailyEl = document.getElementById('daily-list');
+      const weeklyEl = document.getElementById('weekly-list');
+      dailyEl.innerHTML = ''; weeklyEl.innerHTML = '';
 
       exercises.forEach(ex => {
         const isChecked = !!selectedDayState[ex.id];
@@ -405,8 +405,8 @@
           <input type="checkbox" class="ex-check" ${isChecked ? 'checked' : ''} onchange="toggleExercise('${ex.id}')">
         `;
 
-        if (ex.cat === 'upper') upperEl.appendChild(card);
-        else lowerEl.appendChild(card);
+        if (ex.cat === 'daily') dailyEl.appendChild(card);
+        else weeklyEl.appendChild(card);
       });
     }
 
