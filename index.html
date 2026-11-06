@@ -124,19 +124,27 @@
       border-top: 1px solid var(--card-border);
       border-right: 1px solid var(--card-border);
       border-bottom: 1px solid var(--card-border);
-      padding: 12px 16px;
+      padding: 14px 16px;
       border-radius: 8px;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      margin-bottom: 14px;
       box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-      transition: opacity 0.3s ease;
+      transition: all 0.2s ease;
     }
 
-    .card-info { flex-grow: 1; padding-right: 12px; }
-    .card-title { font-weight: 600; font-size: 1rem; margin-bottom: 2px; }
-    .card-meta { font-size: 0.85rem; color: var(--subtext); font-weight: 500; }
+    .card.all-completed {
+      border-left-color: #22c55e;
+      background: #fcfdfd;
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 6px;
+    }
+
+    .card-title { font-weight: 600; font-size: 1rem; color: var(--text); }
+    .card-meta { font-size: 0.85rem; color: var(--subtext); font-weight: 500; margin-top: 2px; }
     
     .card-cue {
       font-size: 0.82rem;
@@ -144,7 +152,8 @@
       background: #eff6ff;
       padding: 6px 10px;
       border-radius: 6px;
-      margin-top: 6px;
+      margin-top: 8px;
+      margin-bottom: 8px;
       display: block;
       font-weight: 500;
       border: 1px solid #bfdbfe;
@@ -155,7 +164,7 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      margin-top: 6px;
+      margin-top: 4px;
       font-size: 0.8rem;
       font-weight: 600;
       color: #0284c7;
@@ -168,29 +177,57 @@
     }
     .video-btn:hover { background: #f0f9ff; }
 
+    /* 3-Session Slot Toggles */
+    .session-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px dashed #e2e8f0;
+    }
+
+    .session-btn {
+      flex: 1;
+      padding: 8px 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      color: #475569;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .session-btn.active {
+      background: #22c55e;
+      border-color: #16a34a;
+      color: #ffffff;
+      box-shadow: 0 1px 2px rgba(22, 163, 74, 0.25);
+    }
+
+    .badge-bar {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      align-items: center;
+    }
+
     .badge {
       display: inline-block;
       background: #e2e8f0;
       color: #334155;
       font-size: 0.75rem;
-      padding: 2px 6px;
+      padding: 3px 8px;
       border-radius: 4px;
       font-weight: 600;
-      margin-top: 6px;
     }
     .badge.goal-met { background: #22c55e; color: white; }
-
-    input[type="checkbox"].ex-check {
-      width: 28px;
-      height: 28px;
-      cursor: pointer;
-      accent-color: #16a34a;
-    }
-
-    .completed .card-title, .completed .card-meta, .completed .card-cue {
-      opacity: 0.45;
-    }
-    .completed .card-title { text-decoration: line-through; }
 
     /* History Styles */
     .history-week {
@@ -259,15 +296,15 @@
       });
     }
 
-    // --- Maigne's Syndrome Protocol Data ---
+    // --- Maigne's Syndrome Protocol (3x/day across 7 days = 21 weekly sets) ---
     const exercises = [
       // Upper Back and Neck
       { 
         id: "m1", 
         cat: "upper", 
         name: "Foam roller head nods", 
-        freq: "Daily: 12 reps", 
-        target: 7, 
+        freq: "Daily: 12 reps (1 set 3x/day)", 
+        targetWeekly: 21,
         cue: null,
         video: "#" 
       },
@@ -278,7 +315,7 @@
         cat: "lower", 
         name: "Knee to chest stretch", 
         freq: "3x Daily: 1–2 min", 
-        target: 7, 
+        targetWeekly: 21,
         cue: "Focus on flex in upper lumbar (bring rib down without switching on core)",
         video: null 
       },
@@ -287,7 +324,7 @@
         cat: "lower", 
         name: "Side lying overbook stretch", 
         freq: "3x Daily: 1–2 min", 
-        target: 7, 
+        targetWeekly: 21,
         cue: "Attempt to relax and breathe (have knee up against an object)",
         video: null 
       },
@@ -296,7 +333,7 @@
         cat: "lower", 
         name: "Neutral to child pose", 
         freq: "3x Daily: 1–2 min", 
-        target: 7, 
+        targetWeekly: 21,
         cue: "Gentle rocking into position (towel up under ribcage - focus on flexing mid back - avoid lower back)",
         video: null 
       },
@@ -305,7 +342,7 @@
         cat: "lower", 
         name: "90/90 table top breathing", 
         freq: "3x Daily: 1–2 min", 
-        target: 7, 
+        targetWeekly: 21,
         cue: "Lower leg on top of chair and keep lumbar neutral and breathe into back.",
         video: null 
       }
@@ -337,12 +374,48 @@
     function loadState() { return JSON.parse(localStorage.getItem('rehab_history_pwa') || '{}'); }
     function saveState(state) { localStorage.setItem('rehab_history_pwa', JSON.stringify(state)); }
 
-    function toggleExercise(id) {
+    // Toggle specific slot ('morning', 'midday', 'evening')
+    function toggleSlot(id, slot) {
       const state = loadState();
       if (!state[selectedDate]) state[selectedDate] = {};
-      state[selectedDate][id] = !state[selectedDate][id];
+      
+      // Ensure backwards-compatible object structure
+      if (!state[selectedDate][id] || typeof state[selectedDate][id] !== 'object') {
+        state[selectedDate][id] = { morning: false, midday: false, evening: false };
+      }
+      
+      state[selectedDate][id][slot] = !state[selectedDate][id][slot];
       saveState(state);
       renderRoutine();
+    }
+
+    // Count completed sets for an exercise on a single day
+    function getDayExerciseSetCount(dayRecord, exId) {
+      if (!dayRecord || !dayRecord[exId]) return 0;
+      const data = dayRecord[exId];
+      if (typeof data === 'boolean') return data ? 3 : 0; // Legacy support
+      let count = 0;
+      if (data.morning) count++;
+      if (data.midday) count++;
+      if (data.evening) count++;
+      return count;
+    }
+
+    // Calculate total sets done in the week starting at mondayStr
+    function getWeeklyCounts(state, mondayStr) {
+      let counts = {};
+      exercises.forEach(ex => counts[ex.id] = 0);
+      for (let i = 0; i < 7; i++) {
+        let d = new Date(mondayStr + 'T00:00:00');
+        d.setDate(d.getDate() + i);
+        let dStr = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        if (state[dStr]) {
+          exercises.forEach(ex => {
+            counts[ex.id] += getDayExerciseSetCount(state[dStr], ex.id);
+          });
+        }
+      }
+      return counts;
     }
 
     // --- Date Navigation Logic ---
@@ -367,26 +440,12 @@
       renderRoutine();
     }
 
-    function getWeeklyCounts(state, mondayStr) {
-      let counts = {};
-      exercises.forEach(ex => counts[ex.id] = 0);
-      for (let i = 0; i < 7; i++) {
-        let d = new Date(mondayStr + 'T00:00:00');
-        d.setDate(d.getDate() + i);
-        let dStr = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-        if (state[dStr]) {
-          exercises.forEach(ex => { if (state[dStr][ex.id]) counts[ex.id]++; });
-        }
-      }
-      return counts;
-    }
-
     // --- UI Rendering ---
     function renderRoutine() {
       const today = getTodayStr();
       const currentMonday = getMonday(selectedDate);
       const state = loadState();
-      const selectedDayState = state[selectedDate] || {};
+      const dayData = state[selectedDate] || {};
       const weeklyCounts = getWeeklyCounts(state, currentMonday);
 
       // Date Picker Controls
@@ -405,27 +464,52 @@
       upperEl.innerHTML = ''; lowerEl.innerHTML = '';
 
       exercises.forEach(ex => {
-        const isChecked = !!selectedDayState[ex.id];
-        const currentCount = weeklyCounts[ex.id];
-        const goalMet = currentCount >= ex.target;
+        const rawSlots = dayData[ex.id] || {};
+        const isMorn = typeof rawSlots === 'boolean' ? rawSlots : !!rawSlots.morning;
+        const isMid = typeof rawSlots === 'boolean' ? rawSlots : !!rawSlots.midday;
+        const isEve = typeof rawSlots === 'boolean' ? rawSlots : !!rawSlots.evening;
+
+        const daySetsDone = (isMorn ? 1 : 0) + (isMid ? 1 : 0) + (isEve ? 1 : 0);
+        const allDayDone = daySetsDone === 3;
+        
+        const weekSetsDone = weeklyCounts[ex.id];
+        const weekGoalMet = weekSetsDone >= ex.targetWeekly;
 
         const card = document.createElement('div');
-        card.className = `card ${isChecked ? 'completed' : ''}`;
+        card.className = `card ${allDayDone ? 'all-completed' : ''}`;
         
         let cueHTML = ex.cue ? `<div class="card-cue">💡 <strong>Cue:</strong> ${ex.cue}</div>` : '';
         let videoHTML = ex.video && ex.video !== "#" 
-          ? `<div style="margin-top: 4px;"><a href="${ex.video}" target="_blank" rel="noopener noreferrer" class="video-btn">▶ Watch Video</a></div>` 
+          ? `<div><a href="${ex.video}" target="_blank" rel="noopener noreferrer" class="video-btn">▶ Watch Video</a></div>` 
           : '';
 
         card.innerHTML = `
-          <div class="card-info">
-            <div class="card-title">${ex.name}</div>
-            <div class="card-meta">${ex.freq}</div>
-            ${cueHTML}
-            ${videoHTML}
-            <div class="badge ${goalMet ? 'goal-met' : ''}">${currentCount} / ${ex.target} days done this week</div>
+          <div class="card-top">
+            <div>
+              <div class="card-title">${ex.name}</div>
+              <div class="card-meta">${ex.freq}</div>
+            </div>
           </div>
-          <input type="checkbox" class="ex-check" ${isChecked ? 'checked' : ''} onchange="toggleExercise('${ex.id}')">
+
+          ${cueHTML}
+          ${videoHTML}
+
+          <div class="session-group">
+            <button class="session-btn ${isMorn ? 'active' : ''}" onclick="toggleSlot('${ex.id}', 'morning')">
+              <span>${isMorn ? '✓' : '○'}</span> Morning
+            </button>
+            <button class="session-btn ${isMid ? 'active' : ''}" onclick="toggleSlot('${ex.id}', 'midday')">
+              <span>${isMid ? '✓' : '○'}</span> Midday
+            </button>
+            <button class="session-btn ${isEve ? 'active' : ''}" onclick="toggleSlot('${ex.id}', 'evening')">
+              <span>${isEve ? '✓' : '○'}</span> Evening
+            </button>
+          </div>
+
+          <div class="badge-bar">
+            <span class="badge ${allDayDone ? 'goal-met' : ''}">${daySetsDone} / 3 today</span>
+            <span class="badge ${weekGoalMet ? 'goal-met' : ''}">${weekSetsDone} / ${ex.targetWeekly} this week</span>
+          </div>
         `;
 
         if (ex.cat === 'upper') upperEl.appendChild(card);
@@ -455,17 +539,17 @@
         let itemsHTML = '';
 
         exercises.forEach(ex => {
-          const count = counts[ex.id];
-          if (count === 0) return;
+          const setsDone = counts[ex.id];
+          if (setsDone === 0) return;
           
-          let pct = Math.min(100, Math.round((count / ex.target) * 100));
+          let pct = Math.min(100, Math.round((setsDone / ex.targetWeekly) * 100));
           let barClass = pct >= 100 ? 'high' : (pct >= 50 ? 'med' : 'low');
 
           itemsHTML += `
             <div class="hist-item">
               <div class="hist-item-header">
                 <span>${ex.name}</span>
-                <span>${pct}% (${count}/${ex.target})</span>
+                <span>${pct}% (${setsDone}/${ex.targetWeekly} sets)</span>
               </div>
               <div class="hist-bar-bg">
                 <div class="hist-bar-fill ${barClass}" style="width: ${pct}%"></div>
